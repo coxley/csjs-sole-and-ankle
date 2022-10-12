@@ -31,39 +31,80 @@ const ShoeCard = ({
       ? 'new-release'
       : 'default'
 
+  let Token = null;
+  if (variant === 'on-sale') {
+    Token = <OnSaleBadge>Sale</OnSaleBadge>
+  } else if (variant === 'new-release') {
+    Token = <NewReleaseBadge>Just Released!</NewReleaseBadge>
+  }
+
   return (
     <Link href={`/shoe/${slug}`}>
       <Wrapper>
+        {Token}
         <ImageWrapper>
           <Image alt="" src={imageSrc} />
         </ImageWrapper>
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price variant={variant}>{formatPrice(price)}</Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          {variant === 'on-sale' && <SalePrice>{formatPrice(salePrice)}</SalePrice>}
         </Row>
       </Wrapper>
     </Link>
   );
 };
 
+const Badge = styled.div`
+  z-index: 2;
+  position: absolute;
+  top: 12px;
+  right: -4px;
+  border-radius: 2px;
+  padding: 8px 12px;
+  font-size: calc(14/16rem);
+  font-weight: 700;
+  text-transform: capitalize;
+`
+
+const NewReleaseBadge = styled(Badge)`
+  color: white;
+  background-color: ${COLORS.secondary};
+`
+
+const OnSaleBadge = styled(Badge)`
+  color: white;
+  background-color: ${COLORS.primary};
+`
+
 const Link = styled.a`
   text-decoration: none;
   color: inherit;
 `;
 
-const Wrapper = styled.article``;
-
-const ImageWrapper = styled.div`
+const Wrapper = styled.article`
   position: relative;
+  isolation: isolate;
+  width: 100%;
 `;
 
-const Image = styled.img``;
+const ImageWrapper = styled.div`
+  border-radius: 16px 16px 4px 4px;
+  position: relative;
+  background-color: ${COLORS.gray[100]};
+`;
+
+const Image = styled.img`
+width: 100%;
+`;
 
 const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
   font-size: 1rem;
 `;
 
@@ -72,7 +113,9 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+${p => p.variant === 'on-sale' && 'text-decoration: line-through; color:' + COLORS.gray[700] + ';'}
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
